@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from consultorio.models import Paciente
 from django import forms
-import re
+from re import match
 
 def validate_chilean_dni(rut: str | None) -> bool:
     """Validate a Chilean RUT.
@@ -23,7 +24,7 @@ def validate_chilean_dni(rut: str | None) -> bool:
     )
     
     # Check format
-    if not re.match(r'^\d{7,8}[0-9Kk]$', rut):
+    if not match(r'^\d{7,8}[0-9Kk]$', rut):
         return False
     
     # Split RUT and DV
@@ -66,6 +67,7 @@ def clean_username(self):
 
     return remove_points_and_hyphens(dni)
 
+
 class RegisterForm(UserCreationForm):
     
     class Meta:
@@ -73,12 +75,20 @@ class RegisterForm(UserCreationForm):
         fields = [
             "username", 
             "email", 
-            "first_name"
+            "first_name",
+            "last_name",
+            "address",
+            "phone",
+            "birthdate",
         ]
     
-    username        = forms.CharField(max_length = 12)
+    username        = forms.CharField(max_length=12)
     email           = forms.EmailField()
-    first_name      = forms.CharField(max_length = 80)
+    first_name      = forms.CharField(max_length=80)
+    last_name       = forms.CharField(max_length=80, required=False)
+    address         = forms.CharField(max_length=255, required=False)
+    phone           = forms.CharField(max_length=15, required=False)
+    birthdate       = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     usable_password = None
 
     def __init__(self, *args, **kwargs):
@@ -88,13 +98,21 @@ class RegisterForm(UserCreationForm):
         self.fields["username"].label   = "RUT"
         self.fields["email"].label      = "Correo"
         self.fields["first_name"].label = "Nombre"
+        self.fields["last_name"].label  = "Apellido"
+        self.fields["address"].label    = "Dirección"
+        self.fields["phone"].label      = "Teléfono"
+        self.fields["birthdate"].label  = "Fecha de Nacimiento"
         self.fields["password1"].label  = "Contraseña"
         self.fields["password2"].label  = "Confirmar contraseña"
         
         # Change help texts
         self.fields["username"].help_text   = "Ingrese su RUT (en un formato válido)"
         self.fields["email"].help_text      = "Ingrese un correo válido"
-        self.fields["first_name"].help_text = "Ingrese su nombre completo"
+        self.fields["first_name"].help_text = "Ingrese su nombre"
+        self.fields["last_name"].help_text  = "Ingrese su apellido"
+        self.fields["address"].help_text    = "Ingrese su dirección"
+        self.fields["phone"].help_text      = "Ingrese su teléfono"
+        self.fields["birthdate"].help_text  = "Ingrese su fecha de nacimiento"
         self.fields["password1"].help_text  = "Ingrese una contraseña segura: al menos 8 caracteres, no común y no solo numérica"
         self.fields["password2"].help_text  = "Repita la contraseña"
         
@@ -102,6 +120,10 @@ class RegisterForm(UserCreationForm):
         self.fields["username"].widget.attrs["placeholder"]   = "RUT"
         self.fields["email"].widget.attrs["placeholder"]      = "Correo"
         self.fields["first_name"].widget.attrs["placeholder"] = "Nombre"
+        self.fields["last_name"].widget.attrs["placeholder"]  = "Apellido"
+        self.fields["address"].widget.attrs["placeholder"]    = "Dirección"
+        self.fields["phone"].widget.attrs["placeholder"]      = "Teléfono"
+        self.fields["birthdate"].widget.attrs["placeholder"]  = "Fecha de Nacimiento"
         self.fields["password1"].widget.attrs["placeholder"]  = "Contraseña"
         self.fields["password2"].widget.attrs["placeholder"]  = "Confirmar contraseña"
         
@@ -121,7 +143,7 @@ class RegisterForm(UserCreationForm):
         self.fields["first_name"].error_messages = {
             "required" : "Este campo es obligatorio"
         }
-        
+
         self.fields["password1"].error_messages = {
             "required" : "Este campo es obligatorio",
             "password_too_short" : "La contraseña es muy corta",
@@ -133,3 +155,18 @@ class RegisterForm(UserCreationForm):
         }
         
         self.error_messages["password_mismatch"] = "Las contraseñas no coinciden."
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            # Crear un Paciente asociado al nuevo usuario
+            Paciente.objects.create(
+                nombre=self.cleaned_data.get('first_name'),
+                apellido=self.cleaned_data.get('last_name'),
+                fecha_nacimiento=self.cleaned_data.get('birthdate'),
+                direccion=self.cleaned_data.get('address'),
+                telefono=self.cleaned_data.get('phone'),
+                email=self.cleaned_data.get('email')
+            )
+        return user
