@@ -1,11 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from .models import Consultorio
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='/login/')
 def seleccionar_region(request):
-    regiones = Consultorio.objects.values('c_reg', 'nom_reg').distinct().order_by('c_reg')
+    regiones = (
+        Consultorio
+        .objects
+        .values('c_reg', 'nom_reg')
+        .distinct()
+        .order_by('c_reg')
+    )
     return render(request, 'consultorio.html', {'regiones': regiones})
 
+@login_required(login_url='/login/')
 def obtener_comunas(request, c_reg):
     comunas = (
         Consultorio
@@ -17,6 +26,7 @@ def obtener_comunas(request, c_reg):
     )
     return JsonResponse(list(comunas), safe=False)
 
+@login_required(login_url='/login/')
 def obtener_consultorios(request, c_com):
     consultorios = (
         Consultorio
@@ -34,6 +44,7 @@ def home(request: HttpRequest):
         context = {"title": "Página principal del consultorio"}
     )
 
+@login_required(login_url='/login/')
 def mis_horas(request: HttpRequest):
     return render(
         request = request, 
@@ -41,6 +52,7 @@ def mis_horas(request: HttpRequest):
         context = {"title": "Mis horas"}
     )
 
+@login_required(login_url='/login/')
 def reservar_hora(request: HttpRequest):
     return render(
         request = request, 
@@ -48,6 +60,7 @@ def reservar_hora(request: HttpRequest):
         context = {"title": "Reservar hora"}
     )
 
+@login_required(login_url='/login/')
 def cancelar_hora(request: HttpRequest):
     return render(
         request = request, 

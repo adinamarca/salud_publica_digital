@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from consultorio.models import Paciente
+from consultorio.models import Usuario
 from django import forms
 from re import match
 
@@ -155,18 +155,3 @@ class RegisterForm(UserCreationForm):
         }
         
         self.error_messages["password_mismatch"] = "Las contraseñas no coinciden."
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        if commit:
-            user.save()
-            # Crear un Paciente asociado al nuevo usuario
-            Paciente.objects.create(
-                nombre=self.cleaned_data.get('first_name'),
-                apellido=self.cleaned_data.get('last_name'),
-                fecha_nacimiento=self.cleaned_data.get('birthdate'),
-                direccion=self.cleaned_data.get('address'),
-                telefono=self.cleaned_data.get('phone'),
-                email=self.cleaned_data.get('email')
-            )
-        return user
