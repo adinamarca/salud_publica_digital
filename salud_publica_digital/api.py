@@ -1,28 +1,48 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from consultorio.models import Consultorio
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.authtoken.models import Token
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth import authenticate
+from base64 import b64decode
 
 class API(APIView):
     
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     
-    @classmethod
-    def post(cls, request):
-        user = authenticate(username=request.data['username'], password=request.data['password'])
+    def post(self, request, *args, **kwargs):
+        
+        auth_header = request.META['HTTP_AUTHORIZATION']
+        encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
+        decoded_credentials = b64decode(encoded_credentials).decode("utf-8").split(':')
+        username = decoded_credentials[0]
+        password = decoded_credentials[1]
+        
+        user = authenticate(username=username, password=password)
+        
         if user:
-            token, created = Token.objects.get_or_create(user=user)
-            return JsonResponse({'token': token.key}, status=200)
+            
+            url = request.get_full_path()
+            
+            if "comuna" in url:
+                
+                return self.obtener_comunas(request, kwargs['c_reg'])
+            
+            elif "consultorio" in url:
+                
+                return self.obtener_consultorios(request, kwargs['c_com'])
+            
+            elif "region" in url:
+                
+                return self.lista_regiones(request)
+        
         else:
-            return JsonResponse({'error': 'Credenciales inválidas'}, status=400)
+            
+            return JsonResponse({'error': 'Credenciales incorrectas.'}, status=400)
     
-    @classmethod
-    def lista_regiones(cls):
+    def lista_regiones(self, request = None):
+        
         regiones = (
             Consultorio
             .objects
@@ -37,8 +57,7 @@ class API(APIView):
         
         return JsonResponse(list(regiones), safe=False)
 
-    @classmethod
-    def obtener_comunas(cls, request, c_reg):
+    def obtener_comunas(self, request, c_reg):
         comunas = (
             Consultorio
             .objects
@@ -49,8 +68,7 @@ class API(APIView):
         )
         return JsonResponse(list(comunas), safe=False)
 
-    @classmethod
-    def obtener_consultorios(cls, request, c_com):
+    def obtener_consultorios(self, request, c_com):
         consultorios = (
             Consultorio
             .objects
