@@ -8,7 +8,7 @@ class Usuario(models.Model):
     fecha_nacimiento = models.DateField()
     direccion = models.EmailField(null=True, blank=True)
     telefono = models.CharField(max_length=15, null=True, blank=True)
-    correo = models.CharField(max_length=255)
+    correo = models.EmailField(max_length=255)
     
     class Meta:
         verbose_name = 'usuario'

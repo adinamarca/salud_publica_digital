@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     regionSelect.addEventListener('change', function() {
         const regionId = parseInt(this.value);
         if (regionId) {
-            fetch(`consultorio/obtener_comunas/${regionId}/`)
+            fetch(`api/v1/comuna/${regionId}/`)
                 .then(response => response.json())
                 .then(data => {
                     comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     comunaSelect.addEventListener('change', function() {
         const comunaId = this.value;
         if (comunaId) {
-            fetch(`consultorio/obtener_consultorios/${comunaId}/`)
+            fetch(`api/v1/consultorio/${comunaId}/`)
                 .then(response => response.json())
                 .then(data => {
                     consultorioSelect.innerHTML = '<option value="">Seleccione un consultorio</option>';
