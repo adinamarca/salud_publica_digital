@@ -29,8 +29,8 @@ urlpatterns = [
     path("api/v1/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/v1/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/v1/region/", API.as_view(), name="region"),
-    path("api/v1/comuna/<int:c_reg>/", API.as_view(), name="obtener_comunas"),
-    path("api/v1/consultorio/<str:c_com>/", API.as_view(), name="consultorio"),
+    path("api/v1/comuna/<int:c_reg>/", API.as_view(), name="lista_comunas"),
+    path("api/v1/consultorio/<str:c_com>/", API.as_view(), name="lista_consultorios"),
     path(route="", view=include("principal.urls", "principal"), name="principal"),
     path(route="consultorio/", view=include("consultorio.urls"), name="consultorio"),
     # This will forward all URLs starting with "consultorio/" to the consultorio app

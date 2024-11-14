@@ -23,7 +23,9 @@ def mis_horas(request: HttpRequest):
 @login_required(login_url='/login/')
 def reservar_hora(request: HttpRequest):
     
-    regiones = API().lista_regiones()
+    api = API()
+    
+    regiones = api.lista_regiones()
     regiones = loads(regiones.content)
     
     return render(

@@ -13,29 +13,42 @@ class API(APIView):
     
     def post(self, request, *args, **kwargs):
         
-        auth_header = request.META['HTTP_AUTHORIZATION']
-        encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
-        decoded_credentials = b64decode(encoded_credentials).decode("utf-8").split(':')
-        username = decoded_credentials[0]
-        password = decoded_credentials[1]
+        authenticated = False
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
         
-        user = authenticate(username=username, password=password)
-        
-        if user:
+        if auth_header is not None:
+            
+            encoded_credentials = auth_header.split(" ")[1]  # Removes "Basic " to isolate credentials
+            decoded_credentials = (
+                b64decode(encoded_credentials)
+                .decode("utf-8")
+                .split(":")
+            )
+            username = decoded_credentials[0]
+            password = decoded_credentials[1]
+            user = authenticate(username=username, password=password)
+            authenticated = (True if user else False)
+            
+        else:
+            authenticated = request.user.is_authenticated
+            
+        if authenticated:
             
             url = request.get_full_path()
             
             if "comuna" in url:
                 
-                return self.obtener_comunas(request, kwargs['c_reg'])
+                response = self.lista_comunas(request, kwargs['c_reg'])
             
             elif "consultorio" in url:
                 
-                return self.obtener_consultorios(request, kwargs['c_com'])
+                response = self.lista_consultorios(request, kwargs['c_com'])
             
             elif "region" in url:
                 
-                return self.lista_regiones(request)
+                response = self.lista_regiones(request)
+                
+            return response
         
         else:
             
@@ -57,7 +70,8 @@ class API(APIView):
         
         return JsonResponse(list(regiones), safe=False)
 
-    def obtener_comunas(self, request, c_reg):
+    def lista_comunas(self, request = None, c_reg = None):
+        
         comunas = (
             Consultorio
             .objects
@@ -68,7 +82,8 @@ class API(APIView):
         )
         return JsonResponse(list(comunas), safe=False)
 
-    def obtener_consultorios(self, request, c_com):
+    def lista_consultorios(self, request = None, c_com = None):
+        
         consultorios = (
             Consultorio
             .objects
