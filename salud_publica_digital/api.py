@@ -33,26 +33,21 @@ class API(APIView):
             authenticated = request.user.is_authenticated
             
         if authenticated:
-            
             url = request.get_full_path()
             
             if "comuna" in url:
-                
                 response = self.lista_comunas(request, kwargs['c_reg'])
             
             elif "consultorio" in url:
-                
                 response = self.lista_consultorios(request, kwargs['c_com'])
             
             elif "region" in url:
-                
                 response = self.lista_regiones(request)
-                
-            return response
         
         else:
+            response = JsonResponse({'error': 'Credenciales incorrectas.'}, status=400)
             
-            return JsonResponse({'error': 'Credenciales incorrectas.'}, status=400)
+        return response
     
     def lista_regiones(self, request = None):
         

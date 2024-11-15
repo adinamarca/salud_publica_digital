@@ -41,7 +41,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <label class="lvl-select" for="region">Región:</label>
-                <select id="region" class="form-control">
+                <select name="region" id="region" class="form-control">
                     <option value="">Seleccione una región</option>
                     {% for region in regiones %}
                         <option value="{{ region.c_reg }}">{{ region.nom_reg }}</option>
@@ -50,24 +50,23 @@
             </div>
             <div class="form-group">
                 <label class="lvl-select" for="comuna">Comuna:</label>
-                <select id="comuna" class="form-control" disabled>
+                <select name="comuna" id="comuna" class="form-control" disabled>
                     <option value="">Seleccione una comuna</option>
                 </select>
             </div>
             <div class="form-group">
                 <label class="lvl-select" for="consultorio">Consultorio:</label>
-                <select id="consultorio" class="form-control" disabled>
+                <select name="consultorio" id="consultorio" class="form-control" disabled>
                     <option value="">Seleccione un consultorio</option>
                 </select>
             </div>
-            <!-- Campos de ejemplo -->
             <div class="form-group">
                 <label class="lvl-select" for="motivo">Motivo de Consulta:</label>
-                <input type="text" id="motivo" class="form-control" placeholder="Ingrese el motivo de la consulta" />
+                <input name = "motivo" type="text" id="motivo" class="form-control" placeholder="Ingrese el motivo de la consulta" />
             </div>
             <div class="form-group">
                 <label class="lvl-select" for="fecha">Fecha de Consulta:</label>
-                <input type="date" id="fecha" class="form-control" />
+                <input name="fecha" type="datetime-local" id="fecha" class="form-control" />
             </div>
             <button type="submit" class="btn btn-primary">Enviar</button>
         </form>

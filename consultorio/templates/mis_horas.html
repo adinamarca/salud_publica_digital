@@ -43,42 +43,18 @@
             <thead class="thead">
                 <tr>
                     <th>Nombre del Consultorio</th>
-                    <th>Hora Agendada</th>
-                    <th>Razón de Agendar</th>
-                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Motivo</th>
                 </tr>
             </thead>
             <tbody class="table-striped table-hover">
+                {% for reserva in reservas %}
                 <tr>
-                    <td>Centro de Salud Familiar</td>
-                    <td>2024-07-15 09:00</td>
-                    <td>Consulta Dental</td>
-                    <td>Confirmada ✅</td>
+                    <td>{{ reserva.consultorio }}</td>
+                    <td>{{ reserva.fecha }}</td>
+                    <td>{{ reserva.motivo }}</td>
                 </tr>
-                <tr>
-                    <td>Centro de Salud Familiar</td>
-                    <td>2024-07-16 11:00</td>
-                    <td>Control Médico</td>
-                    <td>Confirmada ✅</td>
-                </tr>
-                <tr>
-                    <td>Centro de Salud Familiar</td>
-                    <td>2024-07-17 14:00</td>
-                    <td>Consulta General</td>
-                    <td>Confirmada ✅</td>
-                </tr>
-                <tr>
-                    <td>Centro de Salud Familiar</td>
-                    <td>2024-07-18 10:00</td>
-                    <td>Consulta General</td>
-                    <td>En espera de profesional</td>
-                </tr>
-                <tr>
-                    <td>Centro de Salud Familiar</td>
-                    <td>2024-07-19 08:30</td>
-                    <td>Consulta General</td>
-                    <td>En espera de profesional</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
