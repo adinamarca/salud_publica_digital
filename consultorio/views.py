@@ -6,6 +6,7 @@ from salud_publica_digital.api import API
 from .reserva import Reserva
 from .db import insert_reserva, list_reservas
 from json import loads
+from secrets import token_hex
 
 # Create your views here.
 def home(request: HttpRequest):
@@ -41,15 +42,26 @@ def reservar_hora(request: HttpRequest):
     
     if request.method == "POST":
         
+        consultorio_id = form.data["consultorio"]
+        consultorio    = loads(
+            api.get_consultorio(consultorio_id=consultorio_id).content
+        )[0]
+        
+        latitud, longitud = consultorio["latitud"], consultorio["longitud"]
+        
         if form.is_valid():
             
             data = {
-                "rut"        : request.user.username,
-                "region"     : form.data["region"],
-                "comuna"     : form.data["comuna"],
-                "consultorio": form.data["consultorio"],
-                "motivo"     : form.data["motivo"],
-                "fecha"      : form.data["fecha"]
+                "id"         :    token_hex(nbytes=16),
+                "rut"        :    request.user.username,
+                "region"     :    form.data["region"],
+                "comuna"     :    form.data["comuna"],
+                "consultorio_id": consultorio_id,
+                "consultorio":    consultorio["nombre"],
+                "latitud":        latitud,
+                "longitud":       longitud,
+                "motivo"     :    form.data["motivo"],
+                "fecha"      :    form.data["fecha"]
             }
             
             # Insert reservation into the database

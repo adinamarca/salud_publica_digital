@@ -86,3 +86,13 @@ class API(APIView):
             .values()
         )
         return JsonResponse(list(consultorios), safe=False)
+    
+    def get_consultorio(self, request = None, consultorio_id = None):
+        
+        consultorio = (
+            Consultorio
+            .objects
+            .filter(objectid=consultorio_id)
+            .values()
+        )
+        return JsonResponse(list(consultorio), safe=False)

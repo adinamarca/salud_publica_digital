@@ -2,6 +2,17 @@
 
 Before running setup, **install pyenv and Poetry to manage the Python version and dependencies**. **See the next sections for more information**.
 
+### MONGODB
+
+First, install MongoDB with the following command:
+
+```bash
+docker pull mongodb/mongodb-community-server:latest
+docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest
+```
+
+Then, install MongoDB Compass to manage the database. Go to [this url](https://www.mongodb.com/try/download/compass) and download the version for your OS.
+
 ### Special note for WSL
 
 If using WSL, first change permissions of the project folder:

@@ -45,6 +45,7 @@
                     <th>Nombre del Consultorio</th>
                     <th>Fecha</th>
                     <th>Motivo</th>
+                    <th>Ubicación</th>
                 </tr>
             </thead>
             <tbody class="table-striped table-hover">
@@ -53,6 +54,7 @@
                     <td>{{ reserva.consultorio }}</td>
                     <td>{{ reserva.fecha }}</td>
                     <td>{{ reserva.motivo }}</td>
+                    <td><a target="_blank" rel="noopener noreferrer" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="http://maps.google.com/maps?z=12&t=m&q=loc:{{ reserva.latitud }}+{{ reserva.longitud }}">Ingresar</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
