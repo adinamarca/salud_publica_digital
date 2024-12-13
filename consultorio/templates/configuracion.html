@@ -1,0 +1,83 @@
+{% extends "base.html" %} 
+{% load static %}
+
+    {% block title %} 
+        Consultorio Digital
+    {% endblock %} 
+
+    {% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/principal.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet" href="{% static 'css/consultorio.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet" href="{% static 'css/rSlider.min.css' %}" rel="stylesheet"/>
+    {% endblock %}
+
+    {% block navbar %} 
+
+        <ul class="navbar-nav">
+
+            {% if user.is_authenticated %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'agregar_hora' %}">Agregar hora</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'configuracion' %}">Configuración</a>
+                </li>
+                <li class="nav-item">
+                    <form id="frm_logout" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <a class="nav-link" href="javascript:$('#frm_logout').submit();">Cerrar sesión
+                        </a>
+                    </form>
+                </li>
+
+            {% else %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'principal:seleccion_usuario' %}">Registrarse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                </li>
+
+            {% endif %}
+            
+        </ul>
+        
+    {% endblock %}
+
+    {% block content %}
+    <div class="container">
+        <h1 class="lvl-select">Fija tu comuna de atención</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="lvl-select" for="region">Región:</label>
+                <select name="region" id="region" class="form-control">
+                    <option value="">Seleccione una región</option>
+                    {% for region in regiones %}
+                        <option value="{{ region.c_reg }}">{{ region.nom_reg }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="lvl-select" for="comuna">Comuna:</label>
+                <select name="comuna" id="comuna" class="form-control" disabled>
+                    <option value="">Seleccione una comuna</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
+
+    {% block extrascripts %}
+        <script src="{% static 'js/consultorio.js' %}"></script>
+    {% endblock %}
+    
+    {% endblock %}

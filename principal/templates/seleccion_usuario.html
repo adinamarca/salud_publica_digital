@@ -1,0 +1,28 @@
+{% extends "base.html" %} 
+{% load static %}
+
+    {% block title %} 
+        Página principal del Consultorio Digital 
+    {% endblock %} 
+
+    {% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/seleccion_usuario.css' %}" rel="stylesheet"/> 
+    {% endblock %}
+
+    {% block content %} 
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <a href="{% url 'registro_paciente' %}"><button class="btn btn-default btn-success btn-block boton navbar-brand text-light" href="{% url 'registro_paciente' %}">😷 Soy paciente</button></a>
+                </div>
+                <div class="col-md-6 text-center">
+                    <a href="{% url 'registro_profesional' %}"><button class="btn btn-default btn-primary btn-block boton navbar-brand text-light">👨‍⚕️ Soy profesional</button></a>
+                </div>
+            </div>
+        </div>
+
+    {% endblock %}
+
+    {% block extrascripts %} 
+    {% endblock %}

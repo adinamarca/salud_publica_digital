@@ -5,30 +5,6 @@
         Consultorio Digital
     {% endblock %} 
 
-    {% block navbar %} 
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="{% url 'mis_horas' %}">Mis horas</a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="{% url 'reservar_hora' %}">Reservar hora</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'cancelar_hora' %}">Cancelar hora</a>
-            </li>
-            <li class="nav-item">
-                <form id="frm_logout" method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <a class="nav-link" href="javascript:$('#frm_logout').submit();">Cerrar sesión
-                    </a>
-                </form>
-            </li>
-        </ul>
-    {% endblock %}
-
     {% block extra_css %} 
         <link rel="stylesheet" href="{% static 'css/principal.css' %}" rel="stylesheet"/>
         <link rel="stylesheet" href="{% static 'css/consultorio.css' %}" rel="stylesheet"/> 
@@ -66,83 +42,15 @@
             </div>
             <div class="form-group">
                 <label class="lvl-select" for="fecha">Fecha de Consulta:</label>
-                <input name="fecha" type="datetime-local" id="fecha" class="form-control" />
+                <input name="fecha" type="date" id="fecha" class="form-control" />
             </div>
-            <button type="submit" class="btn btn-primary">Enviar</button>
+            <button type="submit" class="btn btn-primary">Buscar hora</button>
         </form>
     </div>
-    
-    <script>
-    function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1);
-            if(c.indexOf(name) == 0)
-                return c.substring(name.length,c.length);
-        }
-        return "";
-    }
-        
-    document.addEventListener('DOMContentLoaded', function() {
-        const regionSelect = document.getElementById('region');
-        const comunaSelect = document.getElementById('comuna');
-        const consultorioSelect = document.getElementById('consultorio');
-    
-        regionSelect.addEventListener('change', function() {
-            const regionId = parseInt(this.value);
-            if (regionId) {
-                fetch(`/api/v1/comuna/${regionId}/`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
-                        data.forEach(comuna => {
-                            comunaSelect.innerHTML += `<option value="${comuna.c_com}">${comuna.nom_com}</option>`;
-                        });
-                        comunaSelect.disabled = false;
-                    });
-            } else {
-                comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
-                comunaSelect.disabled = true;
-                consultorioSelect.innerHTML = '<option value="">Seleccione un consultorio</option>';
-                consultorioSelect.disabled = true;
-            }
-        });
-    
-        comunaSelect.addEventListener('change', function() {
-            const comunaId = this.value;
-            if (comunaId) {
-                fetch(`/api/v1/consultorio/${comunaId}/`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        consultorioSelect.innerHTML = '<option value="">Seleccione un consultorio</option>';
-                        data.forEach(consultorio => {
-                            consultorioSelect.innerHTML += `<option value="${consultorio.objectid}">${consultorio.nombre}</option>`;
-                        });
-                        consultorioSelect.disabled = false;
-                    });
-            } else {
-                consultorioSelect.innerHTML = '<option value="">Seleccione un consultorio</option>';
-                consultorioSelect.disabled = true;
-            }
-        });
-    });
 
-    </script>
+    {% block extrascripts %}
+        <script src="{% static 'js/consultorio.js' %}"></script>
+    {% endblock %}
+
     {% endblock %}
     

@@ -34,6 +34,7 @@ urlpatterns = [
     path(route="", view=include("principal.urls", "principal"), name="principal"),
     path(route="consultorio/", view=include("consultorio.urls"), name="consultorio"),
     # This will forward all URLs starting with "consultorio/" to the consultorio app
-    path(route="registro/", view=registro_views.registro, name="registro"),
+    path(route="registro/paciente", view=registro_views.registro_paciente, name="registro_paciente"),
+    path(route="registro/profesional", view=registro_views.registro_profesional, name="registro_profesional"),
     path("", include("django.contrib.auth.urls")),
 ]

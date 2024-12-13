@@ -24,13 +24,44 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                {% block navbar %}
+
+                {% block navbar %} 
+
+                    <ul class="navbar-nav">
+
+                        {% if user.is_authenticated %}
+
+                            <li class="nav-item active">
+                                <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'reservar_hora' %}">Reservar hora</a>
+                            </li>
+                            <li class="nav-item">
+                                <form id="frm_logout" method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <a class="nav-link" href="javascript:$('#frm_logout').submit();">Cerrar sesión
+                                    </a>
+                                </form>
+                            </li>
+
+                        {% else %}
+
+                            <li class="nav-item active">
+                                <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'principal:seleccion_usuario' %}">Registrarse</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                            </li>
+                        {% endif %}
+                        
+                    </ul>
+                    
                 {% endblock %}
-                {% if user.is_authenticated %}
-                    <span class="navbar-text">
-                        Bienvenido, {{user.first_name}}
-                    </span>
-                {% endif %}
+                
             </div>
         </nav>
         <div class="container-fluid">

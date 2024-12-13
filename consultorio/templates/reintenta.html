@@ -1,0 +1,57 @@
+{% extends "base.html" %} 
+{% load static %}
+
+    {% block title %} 
+        Consultorio Digital - 403
+    {% endblock %} 
+
+    {% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/principal.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet" href="{% static 'css/consultorio.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet" href="{% static 'css/rSlider.min.css' %}" rel="stylesheet"/>
+    {% endblock %}
+
+    {% block navbar %} 
+
+        <ul class="navbar-nav">
+
+            {% if user.is_authenticated %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <form id="frm_logout" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <a class="nav-link" href="javascript:$('#frm_logout').submit();">Cerrar sesión
+                        </a>
+                    </form>
+                </li>
+
+            {% else %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'principal:seleccion_usuario' %}">Registrarse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                </li>
+
+            {% endif %}
+            
+        </ul>
+        
+    {% endblock %}
+
+    {% block content %}
+    
+        <div class="container text-center">
+            <h1 class="welcome-txt">¡No hay horas disponibles!</h1>
+            <p class="welcome-subtxt">Elige otro consultorio.</p>
+            <a href="{% url 'reservar_hora' %}" class="btn btn-primary">Volver a reservar</a>
+        </div>
+
+    {% endblock %}

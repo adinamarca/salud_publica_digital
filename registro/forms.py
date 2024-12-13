@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from consultorio.models import Usuario
+from salud_publica_digital.api import API
 from django import forms
 from re import match
 
@@ -17,11 +18,7 @@ def validate_chilean_dni(rut: str | None) -> bool:
         return False
 
     # Clean RUT
-    rut = (
-        rut
-        .replace('.', '')
-        .replace('-', '')
-    )
+    rut = remove_points_and_hyphens(rut)
     
     # Check format
     if not match(r'^\d{7,8}[0-9Kk]$', rut):
@@ -66,7 +63,6 @@ def clean_username(self):
         self.add_error("username", "Ingrese un RUT válido")
 
     return remove_points_and_hyphens(dni)
-
 
 class RegisterForm(UserCreationForm):
     
@@ -152,6 +148,113 @@ class RegisterForm(UserCreationForm):
         self.fields["password2"].error_messages = {
             "required" : "Este campo es obligatorio",
             "password_mismatch" : "Las contraseñas no coinciden"
+        }
+        
+        self.error_messages["password_mismatch"] = "Las contraseñas no coinciden."
+
+    def is_valid(self):
+        valid = super().is_valid()
+        
+        if not valid:
+            return False
+        
+        cleaned_data = self.clean()
+        dni          = cleaned_data.get('username')
+        
+        if not validate_chilean_dni(dni):
+            self.add_error("username", "Ingrese un RUT válido")
+            return False
+        
+        # If any is empty, return False
+        for key, value in cleaned_data.items():
+            if (value == "") or (value is None):
+                self.add_error(key, "Este campo es obligatorio")
+                return False
+        
+        return True
+
+class RegistroProfesional(RegisterForm):
+        
+    class Meta:
+        model = User
+        fields = [
+            "username", 
+            "email", 
+            "first_name",
+            "last_name",
+            "address",
+            "phone",
+            "birthdate",
+            "specialty",
+            "professional_id",
+            "professional_title",
+            "password1",
+            "password2",
+        ]
+    
+    specialty          = forms.ChoiceField(choices=[
+        ('ALLERGY_IMMUNOLOGY', 'Alergología e Inmunología'),
+        ('ANESTHESIOLOGY', 'Anestesiología'),
+        ('CARDIOLOGY', 'Cardiología'),
+        ('DERMATOLOGY', 'Dermatología'),
+        ('ENDOCRINOLOGY', 'Endocrinología'),
+        ('GASTROENTEROLOGY', 'Gastroenterología'),
+        ('GENERAL_SURGERY', 'Cirugía General'),
+        ('GERIATRICS', 'Geriatría'),
+        ('HEMATOLOGY', 'Hematología'),
+        ('INFECTIOUS_DISEASE', 'Enfermedades Infecciosas'),
+        ('INTERNAL_MEDICINE', 'Medicina Interna'),
+        ('NEPHROLOGY', 'Nefrología'),
+        ('NEUROLOGY', 'Neurología'),
+        ('NEUROSURGERY', 'Neurocirugía'),
+        ('OBSTETRICS_GYNECOLOGY', 'Obstetricia y Ginecología'),
+        ('ONCOLOGY', 'Oncología'),
+        ('OPHTHALMOLOGY', 'Oftalmología'),
+        ('ORTHOPEDICS', 'Ortopedia'),
+        ('OTORHINOLARYNGOLOGY', 'Otorrinolaringología'),
+        ('PATHOLOGY', 'Patología'),
+        ('PEDIATRICS', 'Pediatría'),
+        ('PLASTIC_SURGERY', 'Cirugía Plástica'),
+        ('PSYCHIATRY', 'Psiquiatría'),
+        ('PULMONOLOGY', 'Neumología'),
+        ('RADIOLOGY', 'Radiología'),
+        ('RHEUMATOLOGY', 'Reumatología'),
+        ('UROLOGY', 'Urología'),
+        ], 
+        required=True,
+    )
+    professional_id    = forms.CharField(max_length=12, required=True)
+    professional_title = forms.CharField(max_length=255, required=True)
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Change labels
+        self.fields["specialty"].label          = "Especialidad"
+        self.fields["professional_id"].label    = "RUT Profesional"
+        self.fields["professional_title"].label = "Título Profesional"
+        
+        # Change help texts
+        self.fields["specialty"].help_text          = "Ingrese su especialidad"
+        self.fields["professional_id"].help_text    = "Ingrese su RUT profesional"
+        self.fields["professional_title"].help_text = "Ingrese su título profesional"
+        
+        # Change placeholders
+        self.fields["specialty"].widget.attrs["placeholder"]          = "Especialidad"
+        self.fields["professional_id"].widget.attrs["placeholder"]    = "RUT Profesional"
+        self.fields["professional_title"].widget.attrs["placeholder"] = "Título Profesional"
+        
+        # Change error messages
+        self.fields["specialty"].error_messages = {
+            "required" : "Este campo es obligatorio"
+        }
+        
+        self.fields["professional_id"].error_messages = {
+            "required" : "Este campo es obligatorio"
+        }
+        
+        self.fields["professional_title"].error_messages = {
+            "required" : "Este campo es obligatorio"
         }
         
         self.error_messages["password_mismatch"] = "Las contraseñas no coinciden."

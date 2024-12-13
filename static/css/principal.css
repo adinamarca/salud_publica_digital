@@ -32,7 +32,27 @@ body {
 
 .welcome-txt {
     color: #fff;
-    font-size: 2em;
+    font-size: 3em;
     text-align: center;
     margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+.welcome-subtxt {
+    color: #fff;
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+.table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-collapse: collapse;
+}
+
+a.link-light {
+    color: #f8f9fa !important;
 }

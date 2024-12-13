@@ -1,10 +1,10 @@
 from django.http import JsonResponse
-from consultorio.models import Consultorio
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth import authenticate
 from base64 import b64decode
+from utils.db import list_items
 
 class API(APIView):
     
@@ -50,14 +50,15 @@ class API(APIView):
         return response
     
     def lista_regiones(self, request = None):
-        
-        regiones = (
-            Consultorio
-            .objects
-            .values('c_reg', 'nom_reg')
-            .distinct()
-            .order_by('c_reg')
+
+        regiones = list_items(
+            db_name  = "salud_publica_digital",
+            name     = "consultorio"
         )
+        
+        regiones = sorted(regiones, key=lambda x: x['c_reg'])
+        # Remove duplicates
+        regiones = dict((x['c_reg'], x) for x in regiones).values()
         
         # Parse float to int
         for region in regiones:
@@ -66,33 +67,63 @@ class API(APIView):
         return JsonResponse(list(regiones), safe=False)
 
     def lista_comunas(self, request = None, c_reg = None):
-        
-        comunas = (
-            Consultorio
-            .objects
-            .filter(c_reg=c_reg)
-            .values('c_com', 'nom_com')
-            .distinct()
-            .order_by('nom_com')
+
+        comunas = list_items(
+            db_name = "salud_publica_digital",
+            name    = "consultorio",
+            field   = "c_reg",
+            value   = c_reg
         )
+        
+        comunas = sorted(comunas, key=lambda x: x['c_com'])
+        # Remove duplicates
+        comunas = dict((x['c_com'], x) for x in comunas).values()
+
         return JsonResponse(list(comunas), safe=False)
 
     def lista_consultorios(self, request = None, c_com = None):
         
-        consultorios = (
-            Consultorio
-            .objects
-            .filter(c_com=c_com)
-            .values()
+        consultorios = list_items(
+            db_name = "salud_publica_digital",
+            name    = "consultorio",
+            field   = "c_com",
+            value   = c_com
         )
+
         return JsonResponse(list(consultorios), safe=False)
     
     def get_consultorio(self, request = None, consultorio_id = None):
+
+        if consultorio_id is not None:
+            consultorio_id = int(consultorio_id)
         
-        consultorio = (
-            Consultorio
-            .objects
-            .filter(objectid=consultorio_id)
-            .values()
+        consultorio = list_items(
+            db_name = "salud_publica_digital",
+            name    = "consultorio",
+            field   = "objectid",
+            value   = consultorio_id
         )
+
         return JsonResponse(list(consultorio), safe=False)
+    
+    def get_atencion_profesional(self, request = None, rut = None):
+
+        atencion = list_items(
+            db_name = "salud_publica_digital",
+            name    = "atencion",
+            field   = "rut",
+            value   = rut
+        )
+
+        return JsonResponse(list(atencion), safe=False)
+    
+    def lista_horas(self, request = None, consultorio_id = None):
+
+        horas = list_items(
+            db_name = "salud_publica_digital",
+            name    = "horas",
+            field   = "consultorio_id",
+            value   = str(consultorio_id)
+        )
+
+        return JsonResponse(list(horas), safe=False)

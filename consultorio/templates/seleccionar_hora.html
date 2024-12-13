@@ -1,0 +1,31 @@
+{% extends "base.html" %} 
+{% load static %}
+
+    {% block title %} 
+        Consultorio Digital
+    {% endblock %} 
+
+    {% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/principal.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet" href="{% static 'css/consultorio.css' %}" rel="stylesheet"/>
+    {% endblock %}
+
+    {% block content %}
+    <div class="container">
+        <h1 class="lvl-select">Confirma tu hora</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="lvl-select" for="hora">Hora disponible:</label>
+                <select name="hora" id="hora" class="form-control">
+                    <option value="">Seleccione una hora</option>
+                    {% for hora in horas %}
+                        <option value="{{ hora }}">{{ hora }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Confirmar hora</button>
+        </form>
+    </div>
+    
+    {% endblock %}

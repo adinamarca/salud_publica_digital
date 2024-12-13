@@ -1,0 +1,100 @@
+{% extends "base.html" %} 
+{% load static %}
+
+    {% block title %} 
+        Página principal paciente
+    {% endblock %} 
+
+    {% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/principal.css' %}" rel="stylesheet"/> 
+    {% endblock %}
+
+    {% block navbar %} 
+
+        <ul class="navbar-nav">
+
+            {% if user.is_authenticated %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reservar_hora' %}">Reservar hora</a>
+                </li>
+                <li class="nav-item">
+                    <form id="frm_logout" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <a class="nav-link" href="javascript:$('#frm_logout').submit();">Cerrar sesión
+                        </a>
+                    </form>
+                </li>
+
+            {% else %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'principal:seleccion_usuario' %}">Registrarse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                </li>
+
+            {% endif %}
+            
+        </ul>
+        
+    {% endblock %}
+
+    {% block content %}
+    
+        {% if user.is_authenticated %} 
+
+        <div class="d-flex flex-column w-100">
+
+            <div class="d-flex flex-column">
+
+                <h1 class="welcome-txt">¡Bienvenido, {{user.first_name}}!</h1> 
+
+            </div>
+
+            <div class="d-flex flex-column">
+
+                <div class="container mt-5">
+                    <h2 class="mb-4 text-center" style="color:white;">Mis horas agendadas ⏰</h2>
+                    <table class="table table-dark" style="background-color:rgba(0, 0, 0, 0);">
+                        <thead class="thead">
+                            <tr>
+                                <th>Nombre del Consultorio</th>
+                                <th>Fecha</th>
+                                <th>Motivo</th>
+                                <th>Hora</th>
+                                <th>Ubicación</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-striped table-hover">
+                            {% for reserva in reservas %}
+                            <tr>
+                                <td>{{ reserva.consultorio }}</td>
+                                <td>{{ reserva.fecha }}</td>
+                                <td>{{ reserva.motivo }}</td>
+                                <td>{{ reserva.hora }}</td>
+                                <td><p><a target="_blank" rel="noopener noreferrer" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="http://maps.google.com/maps?z=12&t=m&q=loc:{{ reserva.latitud }}+{{ reserva.longitud }}">Enlace</a></p></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+        {% else %}
+            <h1 class="welcome-txt">¡Bienvenido! <a href="/login" style="color:white;">Inicia sesión</a> para continuar</h1> 
+        {% endif %}
+    {% endblock %}
+
+    {% block extrascripts %} 
+    {% endblock %}

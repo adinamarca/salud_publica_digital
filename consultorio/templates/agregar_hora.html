@@ -1,0 +1,90 @@
+{% extends "base.html" %} 
+{% load static %}
+
+    {% block title %} 
+        Consultorio Digital
+    {% endblock %} 
+
+    {% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/principal.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet" href="{% static 'css/consultorio.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet" href="{% static 'css/rSlider.min.css' %}" rel="stylesheet"/>
+    {% endblock %}
+
+    {% block navbar %} 
+
+        <ul class="navbar-nav">
+
+            {% if user.is_authenticated %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'agregar_hora' %}">Agregar hora</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'configuracion' %}">Configuración</a>
+                </li>
+                <li class="nav-item">
+                    <form id="frm_logout" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <a class="nav-link" href="javascript:$('#frm_logout').submit();">Cerrar sesión
+                        </a>
+                    </form>
+                </li>
+
+            {% else %}
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'principal:principal' %}">Página principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'principal:seleccion_usuario' %}">Registrarse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                </li>
+
+            {% endif %}
+            
+        </ul>
+        
+    {% endblock %}
+
+    {% block content %}
+    <div class="container">
+        <h1 class="lvl-select">Gestiona tus horas</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="lvl-select" for="consultorio">Consultorio:</label>
+                <select name="consultorio" id="consultorio" class="form-control">
+                    <option value="">Seleccione un consultorio</option>
+                    {% for consultorio in consultorios %}
+                        <option value="{{ consultorio.objectid }}">{{ consultorio.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="lvl-select" for="horas">Horas:</label>
+                <input name="horas" type="text" id="slider" class="slider"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
+
+    {% block extrascripts %}
+        <script src="{% static 'js/rSlider.min.js' %}"></script>
+    {% endblock %}
+    
+    <script>
+
+    var mySlider = new rSlider({
+        target: '#slider',
+        values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+        range: true // range slider
+    });
+
+    </script>
+    {% endblock %}
